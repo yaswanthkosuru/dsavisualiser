@@ -4,48 +4,57 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { insertionSortGenerator, generateRandomArray, shuffleArray, type InsertionSortStep, type InsertionItem } from "@/lib/insertionSort"
 
 export function useInsertionSort(initialSize: number = 8) {
-  const [currentStep, setCurrentStep] = useState<InsertionSortStep>({
-    array: [],
-    comparing: [],
-    current: null,
-    sorted: [],
-    explanation: "Click Play to start sorting!",
-    codeHighlight: 0,
-    currentPass: 0,
-    totalPasses: 0,
-    currentIndex: null,
-    comparingIndex: null,
-  })
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [speed, setSpeed] = useState(5)
-  const [stepHistory, setStepHistory] = useState<InsertionSortStep[]>([])
-  const [currentStepIndex, setCurrentStepIndex] = useState(0)
-  const [isDescending, setIsDescending] = useState(false)
-  const [initialized, setInitialized] = useState(false)
-  const generatorRef = useRef<Generator<InsertionSortStep> | null>(null)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Initialize only on client side
-  useEffect(() => {
-    if (!initialized && typeof window !== 'undefined') {
-      const newArray = generateRandomArray(initialSize)
-      const initialStep: InsertionSortStep = {
-        array: newArray,
+  const [currentStep, setCurrentStep] = useState<InsertionSortStep>(() => {
+    if (typeof window === 'undefined') {
+      return {
+        array: [],
         comparing: [],
         current: null,
-        sorted: [newArray[0].id],
+        sorted: [],
         explanation: "Click Play to start sorting!",
         codeHighlight: 0,
         currentPass: 0,
-        totalPasses: newArray.length - 1,
+        totalPasses: 0,
         currentIndex: null,
         comparingIndex: null,
       }
-      setCurrentStep(initialStep)
-      setStepHistory([initialStep])
-      setInitialized(true)
     }
-  }, [initialized, initialSize])
+    const newArray = generateRandomArray(initialSize)
+    return {
+      array: newArray,
+      comparing: [],
+      current: null,
+      sorted: [newArray[0].id],
+      explanation: "Click Play to start sorting!",
+      codeHighlight: 0,
+      currentPass: 0,
+      totalPasses: newArray.length - 1,
+      currentIndex: null,
+      comparingIndex: null,
+    }
+  })
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [speed, setSpeed] = useState(5)
+  const [stepHistory, setStepHistory] = useState<InsertionSortStep[]>(() => {
+    if (typeof window === 'undefined') return []
+    const newArray = generateRandomArray(initialSize)
+    return [{
+      array: newArray,
+      comparing: [],
+      current: null,
+      sorted: [newArray[0].id],
+      explanation: "Click Play to start sorting!",
+      codeHighlight: 0,
+      currentPass: 0,
+      totalPasses: newArray.length - 1,
+      currentIndex: null,
+      comparingIndex: null,
+    }]
+  })
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
+  const [isDescending, setIsDescending] = useState(false)
+  const generatorRef = useRef<Generator<InsertionSortStep> | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const reset = (customArray?: number[], descending?: boolean) => {
     setIsPlaying(false)
