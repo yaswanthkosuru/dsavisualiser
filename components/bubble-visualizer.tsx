@@ -10,16 +10,10 @@ interface BubbleVisualizerProps {
   comparing: number[]
   swapping: number[]
   sorted: number[]
+  explanation?: string
 }
 
-const colors = {
-  default: "bg-gradient-to-br from-blue-500 to-blue-600",
-  comparing: "bg-gradient-to-br from-amber-500 to-orange-600",
-  swapping: "bg-gradient-to-br from-red-500 to-rose-600",
-  sorted: "bg-gradient-to-br from-emerald-500 to-green-600",
-}
-
-export function BubbleVisualizer({ array, comparing, swapping, sorted }: BubbleVisualizerProps) {
+export function BubbleVisualizer({ array, comparing, swapping, sorted, explanation }: BubbleVisualizerProps) {
   const getBubbleState = (index: number) => {
     if (sorted.includes(index)) return "sorted"
     if (swapping.includes(index)) return "swapping"
@@ -27,9 +21,73 @@ export function BubbleVisualizer({ array, comparing, swapping, sorted }: BubbleV
     return "default"
   }
 
+  // Get current status text
+  const getStatusText = () => {
+    if (swapping.length === 2) {
+      return {
+        action: "Swapping",
+        values: `${array[swapping[0]].value} ↔ ${array[swapping[1]].value}`,
+        color: "text-rose-600",
+        bgColor: "bg-rose-50",
+        borderColor: "border-rose-300"
+      }
+    }
+    if (comparing.length === 2) {
+      return {
+        action: "Comparing",
+        values: `${array[comparing[0]].value} vs ${array[comparing[1]].value}`,
+        color: "text-amber-600",
+        bgColor: "bg-amber-50",
+        borderColor: "border-amber-300"
+      }
+    }
+    if (sorted.length === array.length && sorted.length > 0) {
+      return {
+        action: "Complete",
+        values: "All elements sorted!",
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-50",
+        borderColor: "border-emerald-300"
+      }
+    }
+    // Default state - show explanation from previous step
+    return {
+      action: "Status",
+      values: explanation || "Click Play to start",
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-300"
+    }
+  }
+
+  const status = getStatusText()
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-6 min-h-[400px] p-6 lg:p-8">
+    <div className="space-y-4">
+      {/* Status Header - Always visible */}
+      <motion.div
+        key={`${status.action}-${status.values}`}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={cn(
+          "mx-auto max-w-4xl rounded-xl border-2 px-6 py-3 shadow-lg min-h-[60px] flex items-center",
+          status.bgColor,
+          status.borderColor
+        )}
+      >
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 w-full">
+          <span className={cn("text-base font-bold whitespace-nowrap", status.color)}>
+            {status.action}:
+          </span>
+          <span className="text-lg font-bold text-gray-900 text-center sm:text-left">
+            {status.values}
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Bubbles */}
+      <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-6 min-h-[400px] p-6 lg:p-8">
       <AnimatePresence mode="popLayout">
         {array.map((item, index) => {
           const state = getBubbleState(index)
@@ -154,6 +212,7 @@ export function BubbleVisualizer({ array, comparing, swapping, sorted }: BubbleV
           )
         })}
       </AnimatePresence>
+      </div>
     </div>
   )
 }

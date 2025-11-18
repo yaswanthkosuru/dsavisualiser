@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { Navbar } from "@/components/navbar"
-import { BubbleVisualizer } from "@/components/bubble-visualizer"
+import { InsertionVisualizer } from "@/components/insertion-visualizer"
 import { NotesSection } from "@/components/notes-section"
-import { useBubbleSort } from "@/hooks/useBubbleSort"
+import { useInsertionSort } from "@/hooks/useInsertionSort"
 
-export default function BubbleSortPage() {
+export default function InsertionSortPage() {
   const {
     currentStep,
     isPlaying,
@@ -19,7 +19,7 @@ export default function BubbleSortPage() {
     canGoPrevious,
     canGoNext,
     isDescending,
-  } = useBubbleSort()
+  } = useInsertionSort()
 
   const [customInput, setCustomInput] = useState("")
   const [showCustomInput, setShowCustomInput] = useState(false)
@@ -419,12 +419,14 @@ export default function BubbleSortPage() {
           <div className={`bg-white p-12 flex items-center justify-center ${
             isFullscreen ? "min-h-[calc(100vh-180px)]" : "min-h-[600px]"
           }`}>
-            <BubbleVisualizer
+            <InsertionVisualizer
               array={currentStep.array}
               comparing={currentStep.comparing}
-              swapping={currentStep.swapping}
+              current={currentStep.current}
               sorted={currentStep.sorted}
               explanation={currentStep.explanation}
+              currentIndex={currentStep.currentIndex}
+              comparingIndex={currentStep.comparingIndex}
             />
           </div>
 
@@ -514,7 +516,7 @@ export default function BubbleSortPage() {
         </div>
       </main>
 
-      <NotesSection />
+      <NotesSection algorithm="insertion" />
     </div>
   )
 }

@@ -93,7 +93,7 @@ export function* bubbleSortGenerator(initialArray: BubbleItem[], descending = fa
           [],
           [],
           [...sorted],
-          `Swapped! New order: ${arr.join(', ')}`,
+          `Swapped! New order: ${arr.map(item => item.value).join(', ')}`,
           2,
           currentPass,
           totalPasses

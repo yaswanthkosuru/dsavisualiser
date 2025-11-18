@@ -36,7 +36,7 @@ export default function Home() {
       icon: "📥",
       description: "Builds the final sorted array one item at a time",
       complexity: "O(n²)",
-      available: false,
+      available: true,
     },
     {
       name: "Selection Sort",
